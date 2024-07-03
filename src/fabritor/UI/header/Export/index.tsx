@@ -2,16 +2,22 @@ import { Dropdown, Button, message } from 'antd';
 import { ExportOutlined, FileOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { downloadFile, base64ToBlob } from '@/utils';
-import { useContext, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { GloablStateContext } from '@/context';
 import LocalFileSelector from '@/fabritor/components/LocalFileSelector';
 import { CenterV } from '@/fabritor/components/Center';
 import { SETTER_WIDTH } from '@/config';
+import axios from 'axios'
 import { Trans, useTranslation } from '@/i18n/utils';
+import jsPDF from 'jspdf';
+
+// const fs = require('fs');
+
+
 
 const i18nKeySuffix = 'header.export';
 
-const items: MenuProps['items'] = ['jpg', 'png', 'svg', 'json', 'divider', 'clipboard'].map(
+const items: MenuProps['items'] = ['jpg', 'png', 'svg','pdf', 'json', 'divider', 'clipboard'].map(
   item => item === 'divider' ? ({ type: 'divider' }) : ({ key: item, label: <Trans i18nKey={`${i18nKeySuffix}.${item}`} /> })
 )
 
@@ -20,9 +26,19 @@ export default function Export () {
   const localFileSelectorRef = useRef<any>();
   const { t } = useTranslation();
 
+  const [urlParam, setUrlParam] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url');
+    console.log(url);
+    
+    setUrlParam(url);
+  }, []);
   const selectJsonFile = () => {
     localFileSelectorRef.current?.start?.();
   }
+
 
   const handleFileChange = (file) => {
     setReady(false);
@@ -54,7 +70,27 @@ export default function Export () {
       message.error(translate(`${i18nKeySuffix}.copy_fail`));
     }
   }
+  const handlePost = async (urlParam,value) => {
+    console.log(urlParam);
+    
+    const data = {
+      // Your data here
+      key: value,
+    };
 
+    try {
+      const response = await axios.post(`http://${urlParam}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Response data:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  // const fs = require('fs');
   const handleClick = ({ key }) => {
     const { sketch } = editor;
     // @ts-ignore
@@ -72,11 +108,25 @@ export default function Export () {
         const svg = editor.export2Svg();
         downloadFile(svg, 'svg', name);
         break;
+        case 'pdf':
+    const pdf = new jsPDF();
+    const imgData = editor.export2Img({ format: 'png' }); // Export as an image first
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${name}.pdf`);
+    break;
       case 'json':
         const json = editor.canvas2Json();
-        downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
-          JSON.stringify(json, null, 2)
-        )}`, 'json', name);
+        // Define and add the new element to the JSON object
+    const newElementKey = 'imageDisplay'; // Change this to your desired key
+    const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
+    json[newElementKey] = newElementValue;
+    handlePost(urlParam,json)
+  //  downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
+  //         JSON.stringify(json, null, 2)
+  //       )}`, 'json', name);
         break;
       case 'clipboard':
         copyImage();

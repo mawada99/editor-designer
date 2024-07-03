@@ -14,6 +14,7 @@ import { createGroup } from './objects/group';
 import createCustomClass from './custom-objects';
 import { HOVER_OBJECT_CORNER, HOVER_OBJECT_CONTROL, CAPTURE_SUBTARGET_WHEN_DBLCLICK, LOAD_JSON_IGNORE_LOAD_FONT } from '@/config';
 import { translate } from '@/i18n/utils';
+import { log } from 'console';
 export default class Editor {
   public canvas: fabric.Canvas;
   private _options;
@@ -431,6 +432,8 @@ export default class Editor {
       });
     });
   }
+ 
+  
 
   public async clearCanvas () {
     const { width, height, fabritor_desc } = this.sketch;

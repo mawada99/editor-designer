@@ -1,11 +1,12 @@
 import { Layout, Tabs, Flex, FloatButton } from 'antd';
 import { useContext } from 'react';
-import { AlertOutlined, FileTextOutlined, PictureOutlined, BorderOutlined, BulbOutlined, AppstoreOutlined, GithubFilled } from '@ant-design/icons';
+import { AlertOutlined, FileTextOutlined, PictureOutlined, BorderOutlined, BulbOutlined, AppstoreOutlined, GithubFilled ,SwitcherOutlined} from '@ant-design/icons';
 import TextPanel from './TextPanel';
 import ImagePanel from './ImagePanel';
 import ShapePanel from './ShapePanel';
 import PaintPanel from './PaintPanel';
 import DesignPanel from './DesignPanel';
+import LayerPanel from './LayoutPanel';
 import { GloablStateContext } from '@/context';
 import AppPanel from './AppPanel';
 import { PANEL_WIDTH } from '@/config';
@@ -54,6 +55,11 @@ const OBJECT_TYPES = [
     label: <Trans i18nKey="panel.app.title" />,
     value: 'app',
     icon: <AppstoreOutlined style={iconStyle} />
+  },
+  {
+    label: <Trans i18nKey="panel.layer.title" />,
+    value: 'layer',
+    icon: <SwitcherOutlined  style={iconStyle} />
   }
 ];
 
@@ -78,6 +84,9 @@ export default function Panel () {
     }
     if (value === 'app') {
       return <AppPanel />;
+    }
+    if (value === 'layer') {
+      return <LayerPanel />;
     }
     return null;
   }

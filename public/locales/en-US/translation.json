@@ -85,6 +85,8 @@
       "only_image_url": "Only Support Image Url",
       "add": "Add",
       "more": "More Config"
+    }, "layer": {
+      "title": "Layer"
     }
   },
   "setter": {
