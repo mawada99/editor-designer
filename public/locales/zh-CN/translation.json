@@ -20,12 +20,13 @@
     "round": "圆角"
   },
   "header": {
-    "fabritor_desc": "我的画板 by fabritor",
+    "fabritor_desc": "page by fabritor",
     "export": {
       "jpg": "导出为 JPG",
       "png": "导出为 PNG",
       "svg": "导出为 SVG",
       "json": "导出为 JSON",
+      "pdf": "导出为 PDF",
       "clipboard": "复制到剪贴板",
       "load": "加载模板",
       "export": "导出",

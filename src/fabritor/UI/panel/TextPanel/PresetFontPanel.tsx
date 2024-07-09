@@ -27,7 +27,7 @@ const PRESET_FONT_LIST = [
   },
   {
     label: <div style={{ fontSize: 16, fontFamily: 'SourceHanSerif' }}><Trans i18nKey="panel.text.add_body_text" /></div>,
-    key: 'content',
+    key: 'content1',
     config: {
       fontFamily: 'SourceHanSerif',
       fontSize: 80,

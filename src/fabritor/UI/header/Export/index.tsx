@@ -17,7 +17,7 @@ import jsPDF from 'jspdf';
 
 const i18nKeySuffix = 'header.export';
 
-const items: MenuProps['items'] = ['jpg', 'png', 'svg','pdf', 'json', 'divider', 'clipboard'].map(
+const items: MenuProps['items'] = ['jpg', 'png','svg', 'pdf', 'json', 'divider', 'clipboard'].map(
   item => item === 'divider' ? ({ type: 'divider' }) : ({ key: item, label: <Trans i18nKey={`${i18nKeySuffix}.${item}`} /> })
 )
 
@@ -70,12 +70,15 @@ export default function Export () {
       message.error(translate(`${i18nKeySuffix}.copy_fail`));
     }
   }
-  const handlePost = async (urlParam,value) => {
+  const handlePost = async (urlParam,value,type) => {
     console.log(urlParam);
-    
+        const key={
+          type:type,
+          value:value
+        }
     const data = {
       // Your data here
-      key: value,
+      key: key,
     };
 
     try {
@@ -115,7 +118,8 @@ export default function Export () {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`${name}.pdf`);
+    handlePost(urlParam,pdf,"pdf")
+    // pdf.save(`${name}.pdf`);
     break;
       case 'json':
         const json = editor.canvas2Json();
@@ -123,7 +127,7 @@ export default function Export () {
     const newElementKey = 'imageDisplay'; // Change this to your desired key
     const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
     json[newElementKey] = newElementValue;
-    handlePost(urlParam,json)
+    handlePost(urlParam,json,"json")
   //  downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
   //         JSON.stringify(json, null, 2)
   //       )}`, 'json', name);

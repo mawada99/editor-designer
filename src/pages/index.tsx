@@ -7,4 +7,7 @@ export const pageConfig = definePageConfig(() => ({
 
 export default function () {
   return <Fabritor />;
+  
+
 }
+// export { default as TryText } from './TryText';

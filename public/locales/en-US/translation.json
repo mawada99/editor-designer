@@ -26,6 +26,7 @@
       "png": "Export as PNG",
       "svg": "Export as SVG",
       "json": "Export as JSON",
+      "pdf": "Export as PDF",
       "clipboard": "Copy to Clipboard",
       "load": "Load",
       "export": "Export",
