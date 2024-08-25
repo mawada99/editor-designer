@@ -21,26 +21,39 @@ export default function Layer() {
   }
   // const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
-  const urlParam = params.get('url');
-  console.log('URL parameter:', urlParam);
 
   const [deoms, setDeoms] = useState([])
 
+  const attachments = params.get('attachments');
+
+  console.log('URL parameter:', attachments);
+
   useEffect(() => {
-    const test = async () => {
-      const response = await fetch('http://192.168.1.100:8004/storage/tmp/products/1724155791/a8381835-8855-49e7-9c7c-ecae59da8427/temp.json')
-      const datsa = await response.json();
-      console.log(datsa);
+    const url = attachments;
 
-      setDeoms(
-        [datsa]
-      )
+    async function fetchData() {
+      try {
+        // Dynamically import node-fetch
+        const { default: fetch } = await import('node-fetch');
+
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.text();
+        setDeoms([data]);
+        console.log('Response:', data);
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
     }
 
-    if (false) {
-      test()
+    // Call the async function to execute the fetch
+    if (attachments) {
+      fetchData();
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   return (

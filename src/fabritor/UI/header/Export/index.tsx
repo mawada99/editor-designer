@@ -17,22 +17,24 @@ import jsPDF from 'jspdf';
 
 const i18nKeySuffix = 'header.export';
 
-const items: MenuProps['items'] = ['jpg', 'png','svg', 'pdf', 'json', 'divider', 'clipboard'].map(
+const items: MenuProps['items'] = ['jpg', 'png', 'svg', 'pdf', 'json', 'divider', 'clipboard'].map(
   item => item === 'divider' ? ({ type: 'divider' }) : ({ key: item, label: <Trans i18nKey={`${i18nKeySuffix}.${item}`} /> })
 )
 
-export default function Export () {
+export default function Export() {
   const { editor, setReady, setActiveObject } = useContext(GloablStateContext);
   const localFileSelectorRef = useRef<any>();
   const { t } = useTranslation();
 
   const [urlParam, setUrlParam] = useState('');
+  const [productID, setProductID] = useState('');
+  const params = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
     const url = params.get('url');
-    console.log(url);
-    
+    const productId = params.get('productId');
+
+    setProductID(productId);
     setUrlParam(url);
   }, []);
   const selectJsonFile = () => {
@@ -66,25 +68,35 @@ export default function Export () {
         })
       ]);
       message.success(translate(`${i18nKeySuffix}.copy_success`));
-    } catch(e) {
+    } catch (e) {
       message.error(translate(`${i18nKeySuffix}.copy_fail`));
     }
   }
-  const handlePost = async (urlParam,value,type) => {
-    console.log(urlParam);
-        const key={
-          type:type,
-          value:value
-        }
-    const data = {
-      // Your data here
-      key: key,
-    };
+
+  function downloadFile(jsonData, fileName) {
+    // Convert the JSON data to a string
+    // Convert JSON data to a Blob
+    const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+
+    // Create a File object from the Blob
+    const file = new File([blob], fileName, { type: 'application/json' });
+    return file;
+  }
+
+  const handlePost = async (urlParam, value, type) => {
+    const file = downloadFile(value, 'temp.json');
+
+    const token = params.get('token');
+    const formData = new FormData();
+
+    formData.append('file', file);
+    formData.append('productId', productID);
+    formData.append('token', token);
 
     try {
-      const response = await axios.post(`http://${urlParam}`, data, {
+      const response = await axios.post(`http://${urlParam}`, formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
       console.log('Response data:', response.data);
@@ -111,26 +123,26 @@ export default function Export () {
         const svg = editor.export2Svg();
         downloadFile(svg, 'svg', name);
         break;
-        case 'pdf':
-    const pdf = new jsPDF();
-    const imgData = editor.export2Img({ format: 'png' }); // Export as an image first
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    handlePost(urlParam,pdf,"pdf")
-    // pdf.save(`${name}.pdf`);
-    break;
+      case 'pdf':
+        const pdf = new jsPDF();
+        const imgData = editor.export2Img({ format: 'png' }); // Export as an image first
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        handlePost(urlParam, pdf, "pdf")
+        // pdf.save(`${name}.pdf`);
+        break;
       case 'json':
         const json = editor.canvas2Json();
         // Define and add the new element to the JSON object
-    const newElementKey = 'imageDisplay'; // Change this to your desired key
-    const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
-    json[newElementKey] = newElementValue;
-    handlePost(urlParam,json,"json")
-  //  downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
-  //         JSON.stringify(json, null, 2)
-  //       )}`, 'json', name);
+        const newElementKey = 'imageDisplay'; // Change this to your desired key
+        const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
+        json[newElementKey] = newElementValue;
+        handlePost(urlParam, json, "json")
+        //  downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
+        //         JSON.stringify(json, null, 2)
+        //       )}`, 'json', name);
         break;
       case 'clipboard':
         copyImage();
@@ -151,8 +163,8 @@ export default function Export () {
       <Button onClick={selectJsonFile} icon={<FileOutlined />}>
         {t(`${i18nKeySuffix}.load`)}
       </Button>
-      <Dropdown 
-        menu={{ items, onClick: handleClick }} 
+      <Dropdown
+        menu={{ items, onClick: handleClick }}
         arrow={{ pointAtCenter: true }}
         placement="bottom"
       >
