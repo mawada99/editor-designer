@@ -18,42 +18,51 @@ export default function Layer() {
     setReady(true);
     setActiveObject(null);
     editor.fireCustomModifiedEvent();
-  }
+  };
   // const url = window.location.href;
   const params = new URLSearchParams(window.location.search);
-
-  const [deoms, setDeoms] = useState([])
-
+  const filePaths = params.get('filePaths');
   const attachments = params.get('attachments');
 
-  console.log('URL parameter:', attachments);
+  const [deoms, setDeoms] = useState([]);
 
   useEffect(() => {
-    const url = attachments;
-
-    async function fetchData() {
+    const fetchData = async (url) => {
       try {
         // Dynamically import node-fetch
         const { default: fetch } = await import('node-fetch');
-
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.text();
-        setDeoms([data]);
-        console.log('Response:', data);
+        const data = await response.json(); // Assuming the response is JSON
+        return data;
       } catch (error) {
         console.error('Fetch error:', error);
+        return null; // Return null in case of error to avoid breaking the Promise.all
       }
-    }
+    };
 
-    // Call the async function to execute the fetch
     if (attachments) {
-      fetchData();
+      // If there's a single attachment, fetch data for it
+      fetchData(attachments).then(result => {
+        if (result) {
+          setDeoms([result]);
+          console.log('Fetched attachment data:', result);
+        }
+      });
+    } else if (filePaths) {
+      // If there are multiple file paths, fetch data for each
+      const pathsArray = filePaths.split('$');
+      Promise.all(pathsArray.map(path => fetchData(path)))
+        .then(results => {
+          const validResults = results.filter(result => result !== null); // Filter out any null results
+          setDeoms(validResults);
+          console.log('All fetched data:', validResults);
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [attachments, filePaths]);
 
 
   return (

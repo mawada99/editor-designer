@@ -131,14 +131,14 @@ export default function Panel () {
           })
         }
       />
-      <FloatButton.Group shape="circle" style={{ left: 10, bottom: 14, right: 'auto' }}>
+      {/* <FloatButton.Group shape="circle" style={{ left: 10, bottom: 14, right: 'auto' }}>
         <FloatButton
           icon={<GithubFilled />}
           href="https://github.com/sleepy-zone/fabritor-web"
           target="_blank"
         />
         <LocalesSwitch />
-      </FloatButton.Group>
+      </FloatButton.Group> */}
     </Sider>
   )
 }

@@ -162,7 +162,7 @@ export default function Fabritor () {
           <Setter />
         </Layout>
 
-        <svg id="fabritor-rough-svg" ref={roughSvgEl} />
+        {/* <svg id="fabritor-rough-svg" ref={roughSvgEl} /> */}
       </Layout>
     </GloablStateContext.Provider>
   )
