@@ -1,4 +1,4 @@
-import { Dropdown, Button, message , Modal, Space } from 'antd';
+import { Dropdown, Button, message, Modal, Space } from 'antd';
 import { ExportOutlined, FileOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { downloadFile, base64ToBlob } from '@/utils';
@@ -83,7 +83,7 @@ export default function Export() {
     // Convert the JSON data to a string
     // Convert JSON data to a Blob
     console.log(jsonData);
-    
+
     const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
 
     // Create a File object from the Blob
@@ -108,26 +108,105 @@ export default function Export() {
   const handlePost = async (urlParam, value, type) => {
     // value.imageDisplay=copyImage()
     console.log(value);
-    
+
     const file = downloadFile(value, 'temp.json');
 
     const token = params.get('token');
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    formData.append('file', file);
-    formData.append('productId', productID);
-    formData.append('token', token);
+    // formData.append('file', file);
+    // formData.append('productId', productID);
+    // formData.append('token', token);
 
-    try {
-      const response = await axios.post(`http://${urlParam}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      confirm()
-      console.log('Response data:', response.data);
-    } catch (error) {
-      console.error('Error:', error);
+    // console.log(urlParam);
+
+    // try {
+    //   const response = await axios.post(`http://${urlParam}`, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   });
+    //   // confirm()
+    //   console.log('Response data:', response.data);
+    // } catch (error) {
+    //   console.error('Error:', error);
+    // }
+
+    const graphqlFormData = new FormData();
+
+    const operations = {
+      operationName: 'attachmentUpload',
+      variables: {
+        file: null,
+        description: 'description',
+      },
+      query: `
+          mutation attachmentUpload($file: Upload!, $description: String) {
+              attachmentUpload(file: $file, description: $description) {
+                  id
+              }
+          }
+      `,
+    };
+
+    graphqlFormData.append('operations', JSON.stringify(operations));
+
+    // Define the map field
+    const map = {
+      '1': ['variables.file'],
+    };
+
+    graphqlFormData.append('map', JSON.stringify(map));
+
+    // Append the actual file to the FormData with the key matching the map
+    graphqlFormData.append('1', file);
+
+    // First GraphQL request: Upload the file
+    const uploadResponse = await fetch('http://accuratess.mywire.org:8004/graphql', {
+      method: 'POST',
+      body: graphqlFormData,
+    });
+
+    const uploadResult = await uploadResponse.json();
+
+    if (uploadResult.errors) {
+      return `Error: ${uploadResult.errors[0].message}`;
+    }
+
+
+    const attachmentId = uploadResult?.data?.attachmentUpload?.id;
+
+    if (attachmentId) {
+        const variables = {
+            productId: Number(productID),
+            attachmentIds: [attachmentId],
+        };
+        const mutation = `
+        mutation productAttachFile($productId: Int!, $attachmentIds: [Int]) {
+            productAttachFile(productId: $productId, attachmentIds: $attachmentIds) {
+                id
+            }
+        }
+    `;
+
+        // Second GraphQL request: Attach the file to the product
+        const attachResponse = await fetch('http://accuratess.mywire.org:8004/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`,
+            },
+            body: JSON.stringify({
+                query: mutation,
+                variables: variables,
+            }),
+        });
+        const attachResult = await attachResponse.json();
+        if (attachResult.errors) {
+            return 'Failed to add file to Product';
+        }
+
+        return 'File uploaded and attached to product successfully';
     }
   };
 
@@ -182,25 +261,25 @@ export default function Export() {
   const handleExportJson = () => {
     const { sketch } = editor;
     const name = sketch.fabritor_desc;
- 
-        const json = editor.canvas2Json();
-        // Define and add the new element to the JSON object
-        const newElementKey = 'imageDisplay'; // Change this to your desired key
-        const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
-        json[newElementKey] = newElementValue;
-        console.log(json);
-        handlePost(urlParam, json, "json");
+
+    const json = editor.canvas2Json();
+    // Define and add the new element to the JSON object
+    const newElementKey = 'imageDisplay'; // Change this to your desired key
+    const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
+    json[newElementKey] = newElementValue;
+    console.log(json);
+    handlePost(urlParam, json, "json");
   };
   const handleExportPDF = () => {
     const pdf = new jsPDF();
-        const imgData = editor.export2Img({ format: 'pdf' }); 
-        // Export as an image first
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        // handlePost(urlParam, pdf, "pdf")
-        pdf.save(`${name}.pdf`);
+    const imgData = editor.export2Img({ format: 'pdf' });
+    // Export as an image first
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    // handlePost(urlParam, pdf, "pdf")
+    pdf.save(`${name}.pdf`);
   };
 
 
@@ -218,7 +297,7 @@ export default function Export() {
       {/* <Button onClick={selectJsonFile} icon={<FileOutlined />}>
         {t(`${i18nKeySuffix}.load`)}
       </Button> */}
-      
+
       {contextHolder}
       {/* <Dropdown
         menu={{ items, onClick: handleClick }}
@@ -227,10 +306,10 @@ export default function Export() {
       >
         <Button type="primary" icon={<ExportOutlined />}>{t(`${i18nKeySuffix}.export`)}</Button>
       </Dropdown> */}
-      <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined/>}>
+      <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined />}>
         {t(`${i18nKeySuffix}.export`)}
       </Button>
-      <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined/>}>
+      <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
         {t(`${i18nKeySuffix}.pdf`)}
       </Button>
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
