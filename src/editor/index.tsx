@@ -375,6 +375,7 @@ export default class Editor {
     });
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }
+  //dd
 
   public canvas2Json () {
     const json = this.canvas.toJSON(FABRITOR_CUSTOM_PROPS);
