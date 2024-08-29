@@ -178,10 +178,9 @@ export default function Export() {
       default:
         break;
     }
-  }
+  };
   const handleExportJson = () => {
     const { sketch } = editor;
-    // @ts-ignore
     const name = sketch.fabritor_desc;
  
         const json = editor.canvas2Json();
@@ -190,13 +189,20 @@ export default function Export() {
         const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
         json[newElementKey] = newElementValue;
         console.log(json);
-        console.log("jjjjjjjjjjjjj");
-        handlePost(urlParam, json, "json")
-        //  downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(
-        //         JSON.stringify(json, null, 2)
-        //       )}`, 'json', name);
-       
-  }
+        handlePost(urlParam, json, "json");
+  };
+  const handleExportPDF = () => {
+    const pdf = new jsPDF();
+        const imgData = editor.export2Img({ format: 'pdf' }); 
+        // Export as an image first
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        // handlePost(urlParam, pdf, "pdf")
+        pdf.save(`${name}.pdf`);
+  };
+
 
 
 
@@ -221,10 +227,13 @@ export default function Export() {
       >
         <Button type="primary" icon={<ExportOutlined />}>{t(`${i18nKeySuffix}.export`)}</Button>
       </Dropdown> */}
-      <Button onClick={handleExportJson}  type="primary"icon={<ExportOutlined />}>
+      <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined/>}>
         {t(`${i18nKeySuffix}.export`)}
+      </Button>
+      <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined/>}>
+        {t(`${i18nKeySuffix}.pdf`)}
       </Button>
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
     </CenterV>
-  )
+  );
 }
