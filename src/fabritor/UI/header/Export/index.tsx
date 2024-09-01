@@ -36,6 +36,9 @@ export default function Export() {
   const [productID, setProductID] = useState('');
   const params = new URLSearchParams(window.location.search);
 
+  const role = params.get('role');
+  const attachId = params.get('attachId');
+
   useEffect(() => {
     const url = params.get('url');
     const productId = params.get('productId');
@@ -177,11 +180,37 @@ export default function Export() {
     const attachmentId = uploadResult?.data?.attachmentUpload?.id;
 
     if (attachmentId) {
+      if (attachId) {
         const variables = {
-            productId: Number(productID),
-            attachmentIds: [attachmentId],
+          productId: Number(productID),
+          attachmentIds: [Number(attachId)],
         };
         const mutation = `
+            mutation ProductDetachFile($productId: Int!, $attachmentIds: [Int]) {
+                productDetachFile(productId: $productId, attachmentIds: $attachmentIds) {
+                    id
+                }
+            }
+        `;
+
+        // Second GraphQL request: Attach the file to the product
+        await fetch('http://accuratess.mywire.org:8004/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${token}`,
+          },
+          body: JSON.stringify({
+            query: mutation,
+            variables: variables,
+          }),
+        });
+      }
+      const variables = {
+        productId: Number(productID),
+        attachmentIds: [attachmentId],
+      };
+      const mutation = `
         mutation productAttachFile($productId: Int!, $attachmentIds: [Int]) {
             productAttachFile(productId: $productId, attachmentIds: $attachmentIds) {
                 id
@@ -189,24 +218,25 @@ export default function Export() {
         }
     `;
 
-        // Second GraphQL request: Attach the file to the product
-        const attachResponse = await fetch('http://accuratess.mywire.org:8004/graphql', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `${token}`,
-            },
-            body: JSON.stringify({
-                query: mutation,
-                variables: variables,
-            }),
-        });
-        const attachResult = await attachResponse.json();
-        if (attachResult.errors) {
-            return 'Failed to add file to Product';
-        }
+      // Second GraphQL request: Attach the file to the product
+      const attachResponse = await fetch('http://accuratess.mywire.org:8004/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `${token}`,
+        },
+        body: JSON.stringify({
+          query: mutation,
+          variables: variables,
+        }),
+      });
+      const attachResult = await attachResponse.json();
+      if (attachResult.errors) {
+        return 'Failed to add file to Product';
+      }
 
-        return 'File uploaded and attached to product successfully';
+      confirm();
+      return 'File uploaded and attached to product successfully';
     }
   };
 
@@ -270,7 +300,7 @@ export default function Export() {
     console.log(json);
     handlePost(urlParam, json, "json");
   };
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     const pdf = new jsPDF();
     const imgData = editor.export2Img({ format: 'pdf' });
     // Export as an image first
@@ -280,6 +310,23 @@ export default function Export() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     // handlePost(urlParam, pdf, "pdf")
     pdf.save(`${name}.pdf`);
+
+    const formData = new FormData();
+
+    formData.append('fileId', '5');
+
+    try {
+      const response = await axios.post(`http://${urlParam}/api/file`, formData, {
+        headers: {
+          'Content-Type': 'appl',
+        },
+      });
+      // confirm()
+      console.log('Response data:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
   };
 
 
@@ -306,12 +353,12 @@ export default function Export() {
       >
         <Button type="primary" icon={<ExportOutlined />}>{t(`${i18nKeySuffix}.export`)}</Button>
       </Dropdown> */}
-      <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined />}>
+      {(role === 'ADMIN' || !role) && <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined />}>
         {t(`${i18nKeySuffix}.export`)}
-      </Button>
-      <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
+      </Button>}
+      {role === 'CUSTOMER' && <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
         {t(`${i18nKeySuffix}.pdf`)}
-      </Button>
+      </Button>}
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
     </CenterV>
   );
