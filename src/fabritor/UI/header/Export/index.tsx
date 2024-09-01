@@ -51,6 +51,7 @@ export default function Export() {
   }
 
 
+
   const handleFileChange = (file) => {
     setReady(false);
     const reader = new FileReader();
@@ -82,11 +83,9 @@ export default function Export() {
     }
   }
 
-  function downloadFile(jsonData, fileName) {
+  function downloadFileToJSON(jsonData, fileName) {
     // Convert the JSON data to a string
     // Convert JSON data to a Blob
-    console.log(jsonData);
-
     const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
 
     // Create a File object from the Blob
@@ -112,7 +111,7 @@ export default function Export() {
     // value.imageDisplay=copyImage()
     console.log(value);
 
-    const file = downloadFile(value, 'temp.json');
+    const file = downloadFileToJSON(value, 'temp.json');
 
     const token = params.get('token');
     // const formData = new FormData();
@@ -297,35 +296,36 @@ export default function Export() {
     const newElementKey = 'imageDisplay'; // Change this to your desired key
     const newElementValue = editor.export2Img({ format: 'png' }); // Change this to your desired value
     json[newElementKey] = newElementValue;
-    console.log(json);
-    handlePost(urlParam, json, "json");
+    handlePost(urlParam, json, 'json');
   };
   const handleExportPDF = async () => {
-    const pdf = new jsPDF();
-    const imgData = editor.export2Img({ format: 'pdf' });
-    // Export as an image first
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    // handlePost(urlParam, pdf, "pdf")
-    pdf.save(`${name}.pdf`);
+    // const pdf = new jsPDF();
+    // const imgData = editor.export2Img({ format: 'pdf' });
+    // // Export as an image first
+    // const imgProps = pdf.getImageProperties(imgData);
+    // const pdfWidth = pdf.internal.pageSize.getWidth();
+    // const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    // pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    // // handlePost(urlParam, pdf, "pdf")
+    // pdf.save(`${name}.pdf`);
+    const jpg = editor.export2Img({ format: 'jpg' });
+    downloadFile(jpg, 'jpg', 'template');
 
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    formData.append('fileId', '5');
+    // formData.append('fileId', '5');
 
-    try {
-      const response = await axios.post(`http://${urlParam}/api/file`, formData, {
-        headers: {
-          'Content-Type': 'appl',
-        },
-      });
-      // confirm()
-      console.log('Response data:', response.data);
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    // try {
+    //   const response = await axios.post(`http://${urlParam}/api/file`, formData, {
+    //     headers: {
+    //       'Content-Type': 'appl',
+    //     },
+    //   });
+    //   // confirm()
+    //   console.log('Response data:', response.data);
+    // } catch (error) {
+    //   console.error('Error:', error);
+    // }
 
   };
 
@@ -346,6 +346,7 @@ export default function Export() {
       </Button> */}
 
       {contextHolder}
+      {/* {window.location.href} */}
       {/* <Dropdown
         menu={{ items, onClick: handleClick }}
         arrow={{ pointAtCenter: true }}
@@ -353,11 +354,11 @@ export default function Export() {
       >
         <Button type="primary" icon={<ExportOutlined />}>{t(`${i18nKeySuffix}.export`)}</Button>
       </Dropdown> */}
-      {(role === 'ADMIN' || !role) && <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined />}>
+      {(role === 'ADMIN') && <Button onClick={handleExportJson} type="primary" icon={<ExportOutlined />}>
         {t(`${i18nKeySuffix}.export`)}
       </Button>}
-      {role === 'CUSTOMER' && <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
-        {t(`${i18nKeySuffix}.pdf`)}
+      {(role === 'CUSTOMER') && <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
+        {t(`download`)}
       </Button>}
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
     </CenterV>
