@@ -96,8 +96,8 @@ export default function Export() {
 
   const confirm = () => {
     modal.warning({
-      title: 'end design',
-      content: 'File uploaded and attached to product successfully',
+      title:`${t(`${i18nKeySuffix}.endDesign`)}`,
+      content:`${t(`${i18nKeySuffix}.FileUploaded`)}`,
       okButtonProps: {
         disabled: true,
         style: {
@@ -231,11 +231,11 @@ export default function Export() {
       });
       const attachResult = await attachResponse.json();
       if (attachResult.errors) {
-        return 'Failed to add file to Product';
+        return `${t(`${i18nKeySuffix}.uploaded_failed`)}`;
       }
 
       confirm();
-      return 'File uploaded and attached to product successfully';
+      return `${t(`${i18nKeySuffix}.uploaded_success`)}`;
     }
   };
 
@@ -358,7 +358,7 @@ export default function Export() {
         {t(`${i18nKeySuffix}.export`)}
       </Button>}
       {(role === 'CUSTOMER') && <Button onClick={handleExportPDF} type="primary" icon={<ExportOutlined />}>
-        {t(`download`)}
+      {t(`${i18nKeySuffix}.downLoad`)}
       </Button>}
       <LocalFileSelector accept="application/json" ref={localFileSelectorRef} onChange={handleFileChange} />
     </CenterV>

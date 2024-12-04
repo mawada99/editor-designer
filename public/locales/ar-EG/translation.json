@@ -1,0 +1,163 @@
+{
+  "common": {
+    "ok": "نعم",
+    "shadow": "ظل",
+    "color": "لون",
+    "line_width": "عرض الخط",
+    "width": "عرض",
+    "offset": "إزاحة",
+    "operate": "تشغيل",
+    "text": "نص",
+    "size": "حجم",
+    "background_color": "لون الخلفية",
+    "fill": "تعبئة",
+    "stroke": "حد",
+    "stroke_color": "لون الحد",
+    "stroke_width": "عرض الحد",
+    "blur": "تمويه",
+    "border": "إطار",
+    "style": "نمط",
+    "round": "دائري"
+  },
+  "header": {
+    "fabritor_desc": "رسمتي بواسطة Fabritor",
+    "export": {
+      "jpg": "تصدير كـ JPG",
+      "png": "تصدير كـ PNG",
+      "svg": "تصدير كـ SVG",
+      "json": "تصدير كـ JSON",
+      "pdf": "تصدير كـ PDF",
+      "clipboard": "نسخ إلى الحافظة",
+      "load": "تحميل",
+      "export": "تصدير",
+      "copy_success": "تم النسخ بنجاح",
+      "copy_failed": "فشل النسخ، يرجى اختيار التصدير إلى الجهاز المحلي",
+      "downLoad": "تحميل",
+      "endDesign": "إنهاء التصميم",
+      "FileUploaded": "تم تحميل الملف وإرفاقه بالمنتج بنجاح",
+      "uploaded_success": "تم تحميل الملف وإرفاقه بالمنتج بنجاح",
+      "uploaded_failed": "فشل تحميل الملف وإرفاقه بالمنتج"
+    },
+    "toolbar": {
+      "undo": "تراجع",
+      "redo": "إعادة",
+      "select": "تحديد",
+      "pan": "تحريك",
+      "clear": "مسح",
+      "clear_confirm": "تأكيد مسح اللوحة ومسح سجلات العمليات التاريخية؟"
+    }
+  },
+  "panel": {
+    "design": {
+      "title": "تصميم",
+      "start": "ابدأ بإبداعك",
+      "start_demo": "أو ابدأ مع نموذج بسيط"
+    },
+    "text": {
+      "title": "نص",
+      "add": "مربع نص",
+      "add_title": "عنوان",
+      "add_subtitle": "عنوان فرعي",
+      "add_body_text": "نص رئيسي",
+      "add_text_border": "إطار النص",
+      "presets": "الإعدادات المسبقة"
+    },
+    "image": {
+      "title": "صورة",
+      "local": "صورة محلية",
+      "remote": "صورة عن بعد",
+      "remote_placeholder": "رابط الصورة عن بعد"
+    },
+    "material": {
+      "title": "مواد",
+      "line": "خط",
+      "shape": "شكل",
+      "hand_drawn": "رسم يدوي"
+    },
+    "paint": {
+      "title": "رسم",
+      "stop": "إيقاف الرسم",
+      "start": "بدء الرسم",
+      "pencil": "قلم رصاص",
+      "marker_pen": "قلم تحديد"
+    },
+    "app": {
+      "title": "تطبيق",
+      "qrcode": "رمز QR",
+      "emoji": "رمز تعبيري",
+      "error_level": "مستوى الخطأ",
+      "image": "صورة",
+      "image_size": "حجم الصورة",
+      "only_image_url": "يدعم فقط روابط الصور",
+      "add": "إضافة",
+      "more": "المزيد من الإعدادات"
+    },
+    "layer": {
+      "title": "الطبقة"
+    }
+  },
+  "setter": {
+    "size": {
+      "width": "عرض",
+      "height": "ارتفاع"
+    },
+    "sketch": {
+      "title": "لوحة الرسم",
+      "size": "حجم اللوحة",
+      "fill": "لون خلفية اللوحة"
+    },
+    "text": {
+      "font_family": "الخط",
+      "font_size": "حجم الخط",
+      "fill": "اللون",
+      "text_align": "محاذاة",
+      "font_styles": "النمط",
+      "char_spacing": "تباعد الأحرف",
+      "line_height": "ارتفاع السطر",
+      "fx": {
+        "title": "التأثيرات",
+        "fill_image": "تعبئة بالصورة",
+        "text_path": "نص متموج"
+      }
+    },
+    "image": {
+      "filter": "فلتر",
+      "replace": "استبدال الصورة",
+      "crop": "قص"
+    },
+    "group": {
+      "title": "مجموعة",
+      "g": "تجميع",
+      "ung": "فك التجميع"
+    },
+    "common": {
+      "align": "محاذاة",
+      "center": "توسيط",
+      "align_left": "محاذاة إلى اليسار",
+      "center_h": "توسيط أفقي",
+      "align_right": "محاذاة إلى اليمين",
+      "align_top": "محاذاة إلى الأعلى",
+      "center_v": "توسيط رأسي",
+      "align_bottom": "محاذاة إلى الأسفل",
+      "lock": "قفل",
+      "unlock": "فتح القفل",
+      "opacity": "الشفافية",
+      "copy": "نسخ",
+      "paste": "لصق",
+      "create_a_copy": "إنشاء نسخة",
+      "del": "حذف",
+      "flip": "انعكاس",
+      "flip_x": "انعكاس أفقي",
+      "flip_y": "انعكاس رأسي",
+      "adjust_position": "تعديل الموقع",
+      "px": "بكسل",
+      "lock_ratio": "قفل النسبة",
+      "rotate": "تدوير",
+      "layer": "الطبقة",
+      "layer_up": "تحريك للأعلى",
+      "layer_top": "تحريك إلى الأعلى",
+      "layer_down": "تحريك للأسفل",
+      "layer_bottom": "تحريك إلى الأسفل"
+    }
+  }
+}

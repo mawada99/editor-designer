@@ -31,7 +31,12 @@
       "load": "Load",
       "export": "Export",
       "copy_success": "Copied successfully",
-      "copy_failed": "Copy failed, please choose to export to local"
+      "copy_failed": "Copy failed, please choose to export to local",
+      "downLoad": "downLoad",
+      "endDesign": "end design",
+      "FileUploaded": "File uploaded and attached to product successfully",
+      "uploaded_success": "File uploaded and attached to product successfully",
+      "uploaded_failed": "File uploaded and attached to product successfully"
     },
     "toolbar": {
       "undo": "Undo",
@@ -86,7 +91,8 @@
       "only_image_url": "Only Support Image Url",
       "add": "Add",
       "more": "More Config"
-    }, "layer": {
+    },
+    "layer": {
       "title": "Layer"
     }
   },
