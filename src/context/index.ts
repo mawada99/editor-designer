@@ -9,5 +9,4 @@ export interface IGloablStateContext {
   editor?: Editor;
   roughSvg?: any;
 }
-
 export const GloablStateContext = createContext<IGloablStateContext>(null);
